@@ -180,3 +180,10 @@ if (args.length === 0 || args.includes('--help') || args.includes('-h')) {
     console.log(result);
   }
 }
+
+// Export functions for testing and reuse
+module.exports = {
+  modulo,
+  power,
+  squareRoot,
+};
