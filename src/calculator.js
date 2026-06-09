@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 
-// CLI Calculator
-// Supported operations:
-//  - add (or +)
-//  - subtract (or -)
-//  - multiply (or *)
-//  - divide (or /)
+// Node.js CLI Calculator
+// Supported operations (based on the provided image and repo issue):
+//  - add       : addition (num1 + num2)
+//  - subtract  : subtraction (num1 - num2)
+//  - multiply  : multiplication (num1 * num2)
+//  - divide    : division (num1 / num2)
+// The calculator supports positional arguments and an interactive prompt when no args are supplied.
 
 const readline = require('readline');
 
 function usage() {
-  console.log('Usage: node src/calculator.js <operation> <num1> <num2>');
+  console.log('Usage: node calculator.js <operation> <num1> <num2>');
   console.log('Operations: add, subtract, multiply, divide (symbols + - * / accepted)');
-  console.log('Example: node src/calculator.js add 2 3');
+  console.log('Example: node calculator.js add 2 3');
 }
 
 function parseNumber(value) {
@@ -39,7 +40,11 @@ function calculate(op, a, b) {
       return a * b;
     case 'divide':
     case '/':
-      if (b === 0) throw new Error('Division by zero');
+      if (b === 0) {
+        const e = new Error('Division by zero');
+        e.code = 2; // divide-by-zero specific exit code
+        throw e;
+      }
       return a / b;
     default:
       throw new Error(`Unsupported operation: ${op}`);
@@ -61,7 +66,8 @@ function runWithArgs(argv) {
     console.log(result);
   } catch (err) {
     console.error('Error:', err.message);
-    process.exitCode = 1;
+    // Use provided error code when available, otherwise default to 1
+    process.exitCode = err.code || 1;
   }
 }
 
@@ -84,7 +90,7 @@ function promptInteractive() {
       console.log('Result:', result);
     } catch (err) {
       console.error('Error:', err.message);
-      process.exitCode = 1;
+      process.exitCode = err.code || 1;
     } finally {
       rl.close();
     }
