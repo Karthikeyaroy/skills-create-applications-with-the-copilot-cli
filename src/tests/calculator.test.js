@@ -24,3 +24,33 @@ describe('Calculator CLI', () => {
     expect(sqrtNeg.stderr).toMatch(/Square root of negative number/);
   });
 });
+
+// Unit tests for exported functions
+const { modulo, power, squareRoot } = require('../calculator');
+
+describe('Calculator module functions', () => {
+  test('modulo function', () => {
+    expect(modulo(5, 2)).toBe(1);
+    expect(modulo(10, 3)).toBe(1);
+    expect(modulo(-5, 2)).toBe(-1);
+  });
+
+  test('modulo by zero throws', () => {
+    expect(() => modulo(5, 0)).toThrow(/Modulo by zero/);
+  });
+
+  test('power function', () => {
+    expect(power(2, 3)).toBe(8);
+    expect(power(2, -1)).toBeCloseTo(0.5);
+    expect(power(1.5, 2)).toBeCloseTo(2.25);
+  });
+
+  test('squareRoot function', () => {
+    expect(squareRoot(16)).toBe(4);
+    expect(squareRoot(2)).toBeCloseTo(Math.sqrt(2));
+  });
+
+  test('squareRoot of negative number throws', () => {
+    expect(() => squareRoot(-4)).toThrow(/Square root of negative number/);
+  });
+});

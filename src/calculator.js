@@ -25,6 +25,31 @@ function parseNumber(value) {
   return n;
 }
 
+function modulo(a, b) {
+  if (b === 0) {
+    const e = new Error('Modulo by zero');
+    e.code = 2;
+    throw e;
+  }
+  return a % b;
+}
+
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (typeof n !== 'number') {
+    throw new Error('Invalid number for square root');
+  }
+  if (n < 0) {
+    const e = new Error('Square root of negative number');
+    e.code = 3;
+    throw e;
+  }
+  return Math.sqrt(n);
+}
+
 function calculate(op, a, b) {
   // Support basic operations plus mod, pow, and sqrt (sqrt is unary)
   switch (op) {
@@ -161,3 +186,9 @@ function promptInteractive() {
   // positional args: operation num1 num2
   runWithArgs(args);
 })();
+
+module.exports = {
+  modulo,
+  power,
+  squareRoot,
+};
