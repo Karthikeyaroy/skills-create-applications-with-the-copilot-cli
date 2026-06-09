@@ -12,8 +12,9 @@ const readline = require('readline');
 
 function usage() {
   console.log('Usage: node calculator.js <operation> <num1> <num2>');
-  console.log('Operations: add (+), sub (-), mul (*), div (/)');
-  console.log('Example: node calculator.js add 2 3');
+  console.log('Operations: add (+), sub (-), mul (*), div (/), mod (%), pow (^ or **), sqrt (unary)');
+  console.log('Examples: node calculator.js add 2 3    # => 5');
+  console.log('          node calculator.js sqrt 9     # => 3');
 }
 
 function parseNumber(value) {
@@ -25,7 +26,7 @@ function parseNumber(value) {
 }
 
 function calculate(op, a, b) {
-  // Only the four basic operations are supported: add, sub, mul, div
+  // Support basic operations plus mod, pow, and sqrt (sqrt is unary)
   switch (op) {
     case 'add':
     case '+':
@@ -35,6 +36,7 @@ function calculate(op, a, b) {
       return a - b;
     case 'mul':
     case '*':
+    case 'x':
       return a * b;
     case 'div':
     case '/':
@@ -44,19 +46,60 @@ function calculate(op, a, b) {
         throw e;
       }
       return a / b;
+    case 'mod':
+    case '%':
+      if (b === 0) {
+        const e = new Error('Modulo by zero');
+        e.code = 2;
+        throw e;
+      }
+      return a % b;
+    case 'pow':
+    case '^':
+    case '**':
+      return Math.pow(a, b);
+    case 'sqrt':
+      if (typeof a !== 'number') {
+        throw new Error('Invalid number for square root');
+      }
+      if (a < 0) {
+        const e = new Error('Square root of negative number');
+        e.code = 3; // custom exit code for invalid sqrt
+        throw e;
+      }
+      return Math.sqrt(a);
     default:
       throw new Error(`Unsupported operation: ${op}`);
   }
 }
 
 function runWithArgs(argv) {
+  const op = argv[0];
+
+  // unary sqrt: expect 1 numeric argument
+  if (op === 'sqrt') {
+    if (argv.length < 2) {
+      usage();
+      process.exitCode = 1;
+      return;
+    }
+    try {
+      const a = parseNumber(argv[1]);
+      const result = calculate(op, a);
+      console.log(result);
+    } catch (err) {
+      console.error('Error:', err.message);
+      process.exitCode = err.code || 1;
+    }
+    return;
+  }
+
   if (argv.length < 3) {
     usage();
     process.exitCode = 1;
     return;
   }
 
-  const op = argv[0];
   try {
     const a = parseNumber(argv[1]);
     const b = parseNumber(argv[2]);
@@ -79,13 +122,20 @@ function promptInteractive() {
 
   (async () => {
     try {
-      const op = (await question('Operation (add, sub, mul, div or + - * /): ')).trim();
-      const aStr = (await question('First number: ')).trim();
-      const bStr = (await question('Second number: ')).trim();
-      const a = parseNumber(aStr);
-      const b = parseNumber(bStr);
-      const result = calculate(op, a, b);
-      console.log('Result:', result);
+      const op = (await question('Operation (add, sub, mul, div, mod, pow, sqrt or + - * / % ^): ')).trim();
+      if (op === 'sqrt') {
+        const aStr = (await question('Number: ')).trim();
+        const a = parseNumber(aStr);
+        const result = calculate(op, a);
+        console.log('Result:', result);
+      } else {
+        const aStr = (await question('First number: ')).trim();
+        const bStr = (await question('Second number: ')).trim();
+        const a = parseNumber(aStr);
+        const b = parseNumber(bStr);
+        const result = calculate(op, a, b);
+        console.log('Result:', result);
+      }
     } catch (err) {
       console.error('Error:', err.message);
       process.exitCode = err.code || 1;
