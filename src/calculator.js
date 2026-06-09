@@ -2,17 +2,17 @@
 
 // Node.js CLI Calculator
 // Supported operations (based on the provided image and repo issue):
-//  - add       : addition (num1 + num2)
-//  - subtract  : subtraction (num1 - num2)
-//  - multiply  : multiplication (num1 * num2)
-//  - divide    : division (num1 / num2)
-// The calculator supports positional arguments and an interactive prompt when no args are supplied.
+//  - add : addition (num1 + num2)
+//  - sub : subtraction (num1 - num2)
+//  - mul : multiplication (num1 * num2)
+//  - div : division (num1 / num2)
+// The calculator accepts positional args and prints a plain numeric result to stdout.
 
 const readline = require('readline');
 
 function usage() {
   console.log('Usage: node calculator.js <operation> <num1> <num2>');
-  console.log('Operations: add, subtract, multiply, divide (symbols + - * / accepted)');
+  console.log('Operations: add (+), sub (-), mul (*), div (/)');
   console.log('Example: node calculator.js add 2 3');
 }
 
@@ -25,20 +25,18 @@ function parseNumber(value) {
 }
 
 function calculate(op, a, b) {
-  // Only the four basic operations are supported: add, subtract, multiply, divide
+  // Only the four basic operations are supported: add, sub, mul, div
   switch (op) {
     case 'add':
     case '+':
       return a + b;
-    case 'subtract':
+    case 'sub':
     case '-':
       return a - b;
-    case 'multiply':
+    case 'mul':
     case '*':
-    case 'x':
-    case 'X':
       return a * b;
-    case 'divide':
+    case 'div':
     case '/':
       if (b === 0) {
         const e = new Error('Division by zero');
@@ -81,7 +79,7 @@ function promptInteractive() {
 
   (async () => {
     try {
-      const op = (await question('Operation (add, subtract, multiply, divide or + - * /): ')).trim();
+      const op = (await question('Operation (add, sub, mul, div or + - * /): ')).trim();
       const aStr = (await question('First number: ')).trim();
       const bStr = (await question('Second number: ')).trim();
       const a = parseNumber(aStr);
